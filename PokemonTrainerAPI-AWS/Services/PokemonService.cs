@@ -25,21 +25,21 @@ namespace PokemonTrainerAPI.Services
             pkRepository = _pkRepository;
             mapper = _mapper;
         }
-        public void AdicionarPokemon(string nome, string email)
+        public async Task AdicionarPokemon(string nome, string email)
         {
-            if (userService.VerificarExistenciaEmailNoBanco(email))
+            if (await userService.VerificarExistenciaEmailNoBanco(email))
             {
                 Pokemon pokemon = new Pokemon();
                 pokemon.nome = nome;
                 //ToDo: chama pokeAPI para instanciar restante dos atributos
-                Usuario user = userRepository.GetUserByEmail(email);
+                Usuario user = await userRepository.GetUserByEmail(email);
                 pokemon.idTrainer = user.id;
                 pkRepository.InserirPokemon(pokemon);
             }
         }
-        public IList<PokemonOutDTO> ListarPokemonsDoUser(string email)
+        public async Task<IList<PokemonOutDTO>> ListarPokemonsDoUser(string email)
         {
-            Usuario user = userRepository.GetUserByEmail(email);
+            Usuario user = await userRepository.GetUserByEmail(email);
             IList<Pokemon> listaPokemons = pkRepository.ListarPokemons(user);
             IList<PokemonOutDTO> listaPokemonsSaida = mapper.Pokemon2PokemonOutDTO(listaPokemons);
             return listaPokemonsSaida;
@@ -47,7 +47,7 @@ namespace PokemonTrainerAPI.Services
 
         public async Task<IList<PokemonOutDetailedDTO>> ListarPokemonsDoUserDetalhado(string email)
         {
-            Usuario user = userRepository.GetUserByEmail(email);
+            Usuario user = await userRepository.GetUserByEmail(email);
             IList<Pokemon> listaPokemons = pkRepository.ListarPokemons(user);
 
             // consumir a api para cada pokemon in lista pokemons

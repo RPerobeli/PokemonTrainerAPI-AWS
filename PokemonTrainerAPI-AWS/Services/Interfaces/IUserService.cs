@@ -9,10 +9,10 @@ namespace PokemonTrainerAPI.Services.Interfaces
 {
     public interface IUserService
     {
-        void AdicionarUsuario(UserDTO novoUser);
+        Task AdicionarUsuario(UserDTO novoUser);
         void MudarNick(string novoNick, string email);
-        IList<UserDTO> ListarTreinadores();
-        IList<UserDTO> GetUserByUsername(string username);
-        bool VerificarExistenciaEmailNoBanco(string email);
+        Task<IList<UserDTO>> ListarTreinadores();
+        Task<IList<UserDTO>> GetUserByUsername(string username);
+        Task<bool> VerificarExistenciaEmailNoBanco(string email);
     }
 }

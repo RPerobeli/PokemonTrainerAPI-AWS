@@ -47,13 +47,38 @@ namespace PokemonTrainerAPI.Controllers
         [SwaggerResponse(statusCode: 404, description: "Não há pokemons ou não há treinador", Type = typeof(IList<PokemonOutDTO>))]
         [HttpGet]
         [Route("listaPorEmail/{email}")]
-        public IActionResult ListarPokemons(string email)
+        public async Task<IActionResult> ListarPokemons(string email)
         {
             IList<PokemonOutDTO> lista = new List<PokemonOutDTO>();
             try
             {
-                lista = pkService.ListarPokemonsDoUser(email);
+                lista = await pkService.ListarPokemonsDoUser(email);
             }catch(Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+            return Ok(lista);
+        }
+
+        /// <summary>
+        /// Endpoint de teste
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
+        [SwaggerResponse(statusCode: 200, description: "Sucesso", Type = typeof(IList<PokemonOutDTO>))]
+        [SwaggerResponse(statusCode: 404, description: "Falha", Type = typeof(IList<PokemonOutDTO>))]
+        [HttpGet]
+        [Route("teste")]
+        public IActionResult Teste()
+        {
+            IList<PokemonOutDTO> lista = new List<PokemonOutDTO>();
+            PokemonOutDTO pokemonteste = new PokemonOutDTO();
+            pokemonteste.nome = "RONALDINHO - sua api funciona mas o banco nao";
+            try
+            {
+                lista.Add(pokemonteste);
+            }
+            catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }

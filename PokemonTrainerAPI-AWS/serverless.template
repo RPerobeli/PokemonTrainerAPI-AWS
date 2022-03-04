@@ -42,6 +42,12 @@
       "Value": {
         "Fn::Sub": "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
       }
+    },
+    "FriendlyUrl":{
+        "Description":"Friendly URL for Prod environment",
+        "Value":{
+            "Fn::Sub": "https://pokemon-trainer-api/swagger"
+        }
     }
   }
 }

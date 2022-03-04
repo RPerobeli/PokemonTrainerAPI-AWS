@@ -5,6 +5,7 @@ using PokemonTrainerAPI.Repository.Interfaces;
 using PokemonTrainerAPI.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PokemonTrainerAPI.Services
 {
@@ -21,13 +22,13 @@ namespace PokemonTrainerAPI.Services
             pkRepository = _pkRepository;
         }
 
-        public bool AdicionarPokemon(string nome, string email)
+        public async Task<bool> AdicionarPokemon(string nome, string email)
         {
-            if (VerificarExistenciaEmailNoBanco(email))
+            if (await VerificarExistenciaEmailNoBanco(email))
             {
                 Pokemon pokemon = new Pokemon();
                 pokemon.nome = nome;
-                Usuario user = userRepository.GetUserByEmail(email);
+                Usuario user = await userRepository.GetUserByEmail(email);
                 isUserValido(user);
                 pokemon.idTrainer = user.id;
                 pkRepository.InserirPokemon(pokemon);
@@ -39,25 +40,26 @@ namespace PokemonTrainerAPI.Services
             }
         }
 
-        public void AdicionarUsuario(UserDTO novoUser)
+        public async Task AdicionarUsuario(UserDTO novoUser)
         {
             Usuario user = new Usuario();
-            if(!VerificarExistenciaEmailNoBanco(novoUser.email))
+            var isEmailValid = await VerificarExistenciaEmailNoBanco(novoUser.email);
+            if (!isEmailValid)
             {
                 user.SetEmail(novoUser.email);
                 user.SetUsername(novoUser.username);
-                userRepository.InserirUser(user);
+                await userRepository.InserirUser(user);
             }
         }
-        public IList<UserDTO> GetUserByUsername(string username)
+        public async Task<IList<UserDTO>> GetUserByUsername(string username)
         {
-            IList<Usuario> user = userRepository.FindByUsername(username);
+            IList<Usuario> user = await userRepository.FindByUsername(username);
             IList<UserDTO> userDto = mapper.Usuario2UserDTO(user);
             return userDto;
         }
-        public IList<UserDTO> ListarTreinadores()
+        public async Task<IList<UserDTO>> ListarTreinadores()
         {
-            IList<Usuario> lista = userRepository.ListarTreinadores();
+            IList<Usuario> lista = await userRepository.ListarTreinadores();
             IList<UserDTO> listaSaida = mapper.Usuario2UserDTO(lista);
             return listaSaida;
         }
@@ -66,9 +68,9 @@ namespace PokemonTrainerAPI.Services
         {
             userRepository.MudarNick(email, novoNick);
         }
-        public bool VerificarExistenciaEmailNoBanco(string email)
+        public async Task<bool> VerificarExistenciaEmailNoBanco(string email)
         {
-            Usuario user = userRepository.GetUserByEmail(email);
+            Usuario user = await userRepository.GetUserByEmail(email);
             if (user != null)
             {
                 return true;

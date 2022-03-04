@@ -19,6 +19,7 @@ using PokemonTrainerAPI.Repository;
 using PokemonTrainerAPI.Repository.Interfaces;
 using PokemonTrainerAPI.Services;
 using PokemonTrainerAPI.Services.Interfaces;
+using PokemonTrainerAPIAWS.Extensions;
 
 namespace PokemonTrainerAPI_AWS
 {
@@ -46,6 +47,7 @@ namespace PokemonTrainerAPI_AWS
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PokemonTrainerAPI", Version = "v1" });
+                c.ResolveConflictingActions(x => x.First());
             });
             services.AddScoped<IMapper, Mapper>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -62,10 +64,7 @@ namespace PokemonTrainerAPI_AWS
             {
                 app.UseDeveloperExceptionPage();
             }
-#if DEBUG
-#else
-            app.UseHttpsRedirection();
-#endif
+            
             app.UseRouting();
 
             app.UseAuthorization();
@@ -78,12 +77,18 @@ namespace PokemonTrainerAPI_AWS
                     await context.Response.WriteAsync("Welcome to running ASP.NET Core on AWS Lambda");
                 });
             });
+            string urlProducao = Configuration.GetUrlProducao();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
+#if DEBUG
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "PokemonTrainerAPI v1");
+#else
+                c.SwaggerEndpoint($"{urlProducao}/swagger/v1/swagger.json", "PokemonTrainerAPI v1");
+#endif
                 //c.RoutePrefix = string.Empty;
             });
+            app.UseHttpsRedirection();
         }
     }
 }

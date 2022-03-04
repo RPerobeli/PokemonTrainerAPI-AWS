@@ -5,6 +5,7 @@ using PokemonTrainerAPI.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PokemonTrainerAPI.Repository
 {
@@ -15,9 +16,9 @@ namespace PokemonTrainerAPI.Repository
         {
             contexto  = context;
         }
-        public void InserirUser(Usuario user)
+        public async Task InserirUser(Usuario user)
         {
-            contexto.user.Add(user);
+            await contexto.user.AddAsync(user);
             Commit();
         }
 
@@ -26,9 +27,9 @@ namespace PokemonTrainerAPI.Repository
             contexto.SaveChanges();
         }
 
-        public void MudarNick(string email, string novoNick)
+        public async Task MudarNick(string email, string novoNick)
         {
-            Usuario user = GetUserByEmail(email);
+            Usuario user = await GetUserByEmail(email);
             user.SetUsername(novoNick);
             Commit();            
         }
@@ -42,28 +43,29 @@ namespace PokemonTrainerAPI.Repository
             Commit();
         }
 
-        public IList<Usuario> ListarTreinadores()
+        public async Task<IList<Usuario>> ListarTreinadores()
         {
-            var lista = contexto.user.ToList();
+            var lista = contexto.user.ToList() ;
             if(lista.Count == 0)
             {
                 throw new Exception("Não há treinadores cadastrados");
             }
             return lista;
         }
-        public IList<Usuario> FindByUsername(string username)
+        public async Task<IList<Usuario>> FindByUsername(string username)
         {
-            IList<Usuario> userDesejado = contexto.user.Where(w => w.username == username).ToList();
-            if(userDesejado.Count == 0)
+            // IList<Usuario> userDesejado = contexto.user.Where(w => w.username == username).ToList();
+            IList<Usuario> userDesejado = await contexto.user.Where(w => w.username == username).ToListAsync();
+            if (userDesejado.Count == 0)
             {
                 throw new Exception($"Treinador {username} inexistente");
             }
             return userDesejado;
         }
 
-        public Usuario GetUserByEmail(string email)
+        public async Task<Usuario> GetUserByEmail(string email)
         {
-            Usuario user = contexto.user.FirstOrDefault(u => u.email == email);
+            Usuario user = await contexto.user.FirstOrDefaultAsync(u => u.email == email);
             return user;
         }
     }

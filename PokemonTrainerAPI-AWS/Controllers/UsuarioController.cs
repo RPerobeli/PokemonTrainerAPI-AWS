@@ -4,6 +4,7 @@ using PokemonTrainerAPI.Services.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PokemonTrainerAPI.Controllers
 {
@@ -46,12 +47,12 @@ namespace PokemonTrainerAPI.Controllers
         [SwaggerResponse(statusCode: 200, description: "Sucesso ao Listar", Type = typeof(IList<UserDTO>))]
         [HttpGet]
         [Route("listarTreinadores")]
-        public IActionResult ListarTreinadores()
+        public async Task<IActionResult> ListarTreinadores()
         {
             IList<UserDTO> lista = new List<UserDTO>();
             try
             {
-                lista = userService.ListarTreinadores();
+                lista = await userService.ListarTreinadores();
             }catch(Exception ex)
             {
                 return NotFound(ex.Message);
@@ -68,12 +69,12 @@ namespace PokemonTrainerAPI.Controllers
         [SwaggerResponse(statusCode: 404, description: "usuário não encontrado", Type = typeof(IList<UserDTO>))]
         [HttpGet]
         [Route("{username}")]
-        public IActionResult GetUserByUsername(string username)
+        public async Task<IActionResult> GetUserByUsername(string username)
         {
             IList<UserDTO> userDesejado = new List<UserDTO>();
             try
             {
-                userDesejado = userService.GetUserByUsername(username);
+                userDesejado = await userService.GetUserByUsername(username);
             }
             catch(Exception ex)
             {
